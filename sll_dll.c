@@ -94,6 +94,7 @@ int     _pop_the_first_node(p_llist **head)
 }
 
 
+
 int     _pop_the_last_node(p_llist **head)
 {
     int retval;
@@ -143,7 +144,7 @@ int _pop_a_specific_node(p_llist **head, int val)
 }
 
 
-void    push_front_ddl(dd_list **head, int val)
+void    _push_front_dll(dd_list **head, int val)
 {
     dd_list *insert;
 
@@ -164,6 +165,74 @@ void    push_front_ddl(dd_list **head, int val)
         insert->next = *head;
         (*head)->prev = insert;
         *head = insert;
+    }
+}
+
+
+void        _push_back_dll(dd_list **head, int val)
+{
+    dd_list *insert;
+
+    // In case of overflow
+    if (!(insert = (dd_list *)malloc(sizeof(dd_list))))
+        exit (0);
+    insert->a = val;
+    insert->prev = NULL;
+    insert->next = NULL;
+    if (!(*head))
+        (*head) = insert;
+    else
+    {
+        while ((*head)->next)
+            (*head) = (*head)->next;
+        (*head)->next = insert;
+    }
+}
+
+// Try to use the tmp for every head you use ....
+
+void        _push_after_specific_node_dll(dd_list **head, int spec, int val)
+{
+    dd_list *insert;
+    dd_list *tmp;
+
+    if (!(*head))
+        exit (0);
+    if (!(insert = (dd_list *)malloc(sizeof(dd_list))))
+        exit (0);
+    while ((*head)->next && (*head)->next->a != spec)
+        (*head) = (*head)->next;
+    tmp = (*head)->next;
+    if (tmp && tmp->a == spec)
+    {
+        insert->a = val;
+        insert->prev = tmp;
+        insert->next = tmp->next;
+        tmp->next->prev = insert;
+        tmp->next = insert;
+    }
+}
+
+
+void        _push_before_specific_node_dll(dd_list **head, int spec, int val)
+{
+    dd_list *insert;
+    dd_list *tmp;
+
+    if (!(*head))
+        exit (0);
+    if (!(insert = (dd_list *)malloc(sizeof(dd_list))))
+        exit (0);
+    while ((*head)->next != NULL && ((*head)->next->a != spec))
+        (*head) = (*head)->next;
+    if ((*head)->next && (*head)->next->a == spec)
+    {
+        tmp = (*head)->next;
+        insert->a = val;
+        insert->next = tmp;
+        insert->prev = (*head);
+        tmp->prev = insert;
+        (*head)->next = insert;
     }
 }
 
@@ -226,14 +295,36 @@ int main(void)
     i = -1;
     // Push front for doubly linked list :
     while (++i < 14)
-        push_front_ddl(&head_dd, i);
+        _push_front_dll(&head_dd, i);
     t1_dd = head_dd;
-    while (t1_dd)
+    t2_dd = head_dd;
+    dd_list *test;
+    test = head_dd;
+    printf("Forward :\n");
+    while (t1_dd->next)
     {
         printf(" %d^", t1_dd->a);
         t1_dd = t1_dd->next;
     }
-
+    _push_after_specific_node_dll(&head_dd, 0, 99);
+    // _push_before_specific_node_dll(&test, 5, 88);
+    printf("%d\n", t1_dd->a);
+    printf("Backward : \n");
+    while (t1_dd->prev)
+    {
+        printf("%d^", t1_dd->a);
+        t1_dd = t1_dd->prev;
+    }
+    printf("%d\n", t1_dd->a);
+    puts("push back and then print everything : ");
+    i = 13;
+    while (++i < 20)
+        _push_back_dll(&test, i);
+    while (t2_dd)
+    {
+        printf(" | %d", t2_dd->a);
+        t2_dd = t2_dd->next;
+    }
     puts("");
     return 0;
 }
