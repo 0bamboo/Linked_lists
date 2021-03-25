@@ -195,16 +195,22 @@ void        _push_after_specific_node_dll(dd_list **head, int spec, int val)
 {
     dd_list *insert;
     dd_list *tmp;
+    dd_list *curr;
 
-    if (!(*head))
+    curr = *head;
+    if (!curr)
         exit (0);
     if (!(insert = (dd_list *)malloc(sizeof(dd_list))))
         exit (0);
-    while ((*head)->next && (*head)->next->a != spec)
-        (*head) = (*head)->next;
-    tmp = (*head)->next;
-    if (tmp && tmp->a == spec)
+    while (curr->next != NULL && curr->next->a != spec)
     {
+        curr = curr->next;
+    }
+    if (tmp->next == NULL && tmp->a == spec)
+        _push_back_dll(head, val);
+    else if (tmp && tmp->a == spec)
+    {
+        tmp = curr->next;
         insert->a = val;
         insert->prev = tmp;
         insert->next = tmp->next;
@@ -218,21 +224,28 @@ void        _push_before_specific_node_dll(dd_list **head, int spec, int val)
 {
     dd_list *insert;
     dd_list *tmp;
+    dd_list *curr;
 
-    if (!(*head))
+    curr = *head;
+    if (!curr)
         exit (0);
+    if (curr->a == val)
+    {
+        puts("im in");
+        _push_front_dll(head, val);
+    }
     if (!(insert = (dd_list *)malloc(sizeof(dd_list))))
         exit (0);
-    while ((*head)->next != NULL && ((*head)->next->a != spec))
-        (*head) = (*head)->next;
-    if ((*head)->next && (*head)->next->a == spec)
+    while (curr->next != NULL && (curr->next->a != spec))
+        curr = curr->next;
+    if (curr->next && curr->next->a == spec)
     {
-        tmp = (*head)->next;
+        tmp = curr->next;
         insert->a = val;
         insert->next = tmp;
-        insert->prev = (*head);
+        insert->prev = curr;
         tmp->prev = insert;
-        (*head)->next = insert;
+        curr->next = insert;
     }
 }
 
@@ -286,7 +299,7 @@ int main(void)
         printf("%d-", test2->a);
         test2 = test2->next;
     }
-    puts("");
+    puts("\n\ndouble");
 
 
     // DOUBLY LINKED LIST :
@@ -306,8 +319,8 @@ int main(void)
         printf(" %d^", t1_dd->a);
         t1_dd = t1_dd->next;
     }
-    _push_after_specific_node_dll(&head_dd, 0, 99);
-    // _push_before_specific_node_dll(&test, 5, 88);
+    _push_after_specific_node_dll(&head_dd, 231, 99);
+    _push_before_specific_node_dll(&head_dd, 1333, 10000);
     printf("%d\n", t1_dd->a);
     printf("Backward : \n");
     while (t1_dd->prev)
